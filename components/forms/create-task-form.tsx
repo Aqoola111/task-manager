@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+
 import { useTRPC } from "@/lib/trpc/client";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/lib/models/types";
 import {
@@ -75,7 +77,10 @@ export function CreateTaskForm() {
 
   const create = useMutation(
     trpc.task.create.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (task) => {
+        toast.success("Task created", {
+          description: task.name,
+        });
         await queryClient.invalidateQueries(trpc.task.all.queryFilter());
         await queryClient.invalidateQueries(trpc.task.recent.queryFilter());
         router.push("/dashboard/tasks");

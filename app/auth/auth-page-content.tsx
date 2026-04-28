@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 
 import { authClient } from "@/lib/auth-client";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -14,9 +16,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  authSignInSchema,
+  authSignUpSchema,
+  type AuthSignInInput,
+  type AuthSignUpInput,
+} from "@/lib/validation/auth";
 import { cn } from "@/lib/utils";
 
 export function AuthPageContent() {
@@ -24,157 +37,246 @@ export function AuthPageContent() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [signInEmail, setSignInEmail] = useState("");
-  const [signInPassword, setSignInPassword] = useState("");
-  const [signUpName, setSignUpName] = useState("");
-  const [signUpEmail, setSignUpEmail] = useState("");
-  const [signUpPassword, setSignUpPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState("signin");
 
-  async function onSignIn(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  const signInForm = useForm<AuthSignInInput>({
+    resolver: zodResolver(authSignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const signUpForm = useForm<AuthSignUpInput>({
+    resolver: zodResolver(authSignUpSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSignIn = signInForm.handleSubmit(async (data) => {
+    signInForm.clearErrors("root");
     const result = await authClient.signIn.email({
-      email: signInEmail,
-      password: signInPassword,
+      email: data.email,
+      password: data.password,
       callbackURL: callbackUrl,
     });
-    setLoading(false);
     if (result.error) {
-      setError(result.error.message ?? "Sign in failed");
+      signInForm.setError("root", {
+        message: result.error.message ?? "Sign in failed",
+      });
       return;
     }
     router.push(callbackUrl);
     router.refresh();
-  }
+  });
 
-  async function onSignUp(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  const onSignUp = signUpForm.handleSubmit(async (data) => {
+    signUpForm.clearErrors("root");
     const result = await authClient.signUp.email({
-      name: signUpName,
-      email: signUpEmail,
-      password: signUpPassword,
+      name: data.name,
+      email: data.email,
+      password: data.password,
       callbackURL: callbackUrl,
     });
-    setLoading(false);
     if (result.error) {
-      setError(result.error.message ?? "Sign up failed");
+      signUpForm.setError("root", {
+        message: result.error.message ?? "Sign up failed",
+      });
       return;
     }
     router.push(callbackUrl);
     router.refresh();
+  });
+
+  function handleTabChange(next: string) {
+    setTab(next);
+    signInForm.clearErrors();
+    signUpForm.clearErrors();
   }
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-x-hidden overflow-y-auto border-b border-border bg-background px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))] sm:p-6">
       <Card className="w-full max-w-md border-2 border-border bg-neo-pink backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-black tracking-tight">Welcome</CardTitle>
+          <CardTitle className="text-2xl font-black tracking-tight">
+            Welcome
+          </CardTitle>
           <CardDescription className="font-semibold">
             Sign in to your workspace or create an account.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
-            <p
-              className="mb-4 rounded-sm border-2 border-destructive bg-destructive/15 px-3 py-2 text-sm font-bold text-destructive"
-              role="alert"
-            >
-              {error}
-            </p>
-          )}
-
-          <Tabs defaultValue="signin" className="w-full">
+          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign in</TabsTrigger>
               <TabsTrigger value="signup">Sign up</TabsTrigger>
             </TabsList>
             <TabsContent className="pt-6" value="signin">
-              <form onSubmit={onSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label
-                    className="font-bold"
-                    htmlFor="signin-email"
+              <form onSubmit={onSignIn} className="space-y-4" noValidate>
+                {signInForm.formState.errors.root ? (
+                  <p
+                    className="rounded-sm border-2 border-destructive bg-destructive/15 px-3 py-2 text-sm font-bold text-destructive"
+                    role="alert"
                   >
-                    Email
-                  </Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={signInEmail}
-                    onChange={(e) => setSignInEmail(e.target.value)}
+                    {signInForm.formState.errors.root.message}
+                  </p>
+                ) : null}
+                <FieldGroup className="gap-4">
+                  <Controller
+                    name="email"
+                    control={signInForm.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel
+                          className="font-bold"
+                          htmlFor="signin-email"
+                        >
+                          Email
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id="signin-email"
+                          type="email"
+                          autoComplete="email"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid ? (
+                          <FieldError errors={[fieldState.error]} />
+                        ) : null}
+                      </Field>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    className="font-bold"
-                    htmlFor="signin-password"
-                  >
-                    Password
-                  </Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    value={signInPassword}
-                    onChange={(e) => setSignInPassword(e.target.value)}
+                  <Controller
+                    name="password"
+                    control={signInForm.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel
+                          className="font-bold"
+                          htmlFor="signin-password"
+                        >
+                          Password
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id="signin-password"
+                          type="password"
+                          autoComplete="current-password"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid ? (
+                          <FieldError errors={[fieldState.error]} />
+                        ) : null}
+                      </Field>
+                    )}
                   />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Please wait…" : "Sign in"}
+                </FieldGroup>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={signInForm.formState.isSubmitting}
+                >
+                  {signInForm.formState.isSubmitting
+                    ? "Please wait…"
+                    : "Sign in"}
                 </Button>
               </form>
             </TabsContent>
             <TabsContent className="pt-6" value="signup">
-              <form onSubmit={onSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="font-bold" htmlFor="signup-name">
-                    Name
-                  </Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    autoComplete="name"
-                    required
-                    value={signUpName}
-                    onChange={(e) => setSignUpName(e.target.value)}
+              <form onSubmit={onSignUp} className="space-y-4" noValidate>
+                {signUpForm.formState.errors.root ? (
+                  <p
+                    className="rounded-sm border-2 border-destructive bg-destructive/15 px-3 py-2 text-sm font-bold text-destructive"
+                    role="alert"
+                  >
+                    {signUpForm.formState.errors.root.message}
+                  </p>
+                ) : null}
+                <FieldGroup className="gap-4">
+                  <Controller
+                    name="name"
+                    control={signUpForm.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel
+                          className="font-bold"
+                          htmlFor="signup-name"
+                        >
+                          Name
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id="signup-name"
+                          type="text"
+                          autoComplete="name"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid ? (
+                          <FieldError errors={[fieldState.error]} />
+                        ) : null}
+                      </Field>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label className="font-bold" htmlFor="signup-email">
-                    Email
-                  </Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={signUpEmail}
-                    onChange={(e) => setSignUpEmail(e.target.value)}
+                  <Controller
+                    name="email"
+                    control={signUpForm.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel
+                          className="font-bold"
+                          htmlFor="signup-email"
+                        >
+                          Email
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id="signup-email"
+                          type="email"
+                          autoComplete="email"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid ? (
+                          <FieldError errors={[fieldState.error]} />
+                        ) : null}
+                      </Field>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label className="font-bold" htmlFor="signup-password">
-                    Password
-                  </Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    value={signUpPassword}
-                    onChange={(e) => setSignUpPassword(e.target.value)}
+                  <Controller
+                    name="password"
+                    control={signUpForm.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel
+                          className="font-bold"
+                          htmlFor="signup-password"
+                        >
+                          Password
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id="signup-password"
+                          type="password"
+                          autoComplete="new-password"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid ? (
+                          <FieldError errors={[fieldState.error]} />
+                        ) : null}
+                      </Field>
+                    )}
                   />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Please wait…" : "Create account"}
+                </FieldGroup>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={signUpForm.formState.isSubmitting}
+                >
+                  {signUpForm.formState.isSubmitting
+                    ? "Please wait…"
+                    : "Create account"}
                 </Button>
               </form>
             </TabsContent>

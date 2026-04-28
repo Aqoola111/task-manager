@@ -22,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import type { SerializedTask } from "@/lib/serialize/task-project";
 import type { TaskStatus } from "@/lib/models/types";
 import { TASK_STATUSES } from "@/lib/models/types";
+import { toast } from "sonner";
+
 import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS } from "@/lib/task-ui";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
@@ -208,6 +210,9 @@ export function TasksKanbanBoard({ tasks }: { tasks: SerializedTask[] }) {
         }
       },
       onSuccess: async (updated) => {
+        toast.success("Task updated", {
+          description: `${updated.name} → ${TASK_STATUS_LABELS[updated.status]}`,
+        });
         queryClient.setQueryData(allQueryOpts.queryKey, (old) => {
           if (!old) return old;
           return old.map((t) => (t._id === updated._id ? updated : t));

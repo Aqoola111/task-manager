@@ -15,7 +15,9 @@ import {
   TASK_STATUS_SELECT_ITEM,
   TASK_STATUS_SELECT_TRIGGER,
 } from "@/lib/select-option-classes";
-import { STATUS_ITEMS } from "@/lib/task-ui";
+import { STATUS_ITEMS, TASK_STATUS_LABELS } from "@/lib/task-ui";
+import { toast } from "sonner";
+
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +35,10 @@ export function TaskStatusSelect({
 
   const update = useMutation(
     trpc.task.updateStatus.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (updated) => {
+        toast.success("Task updated", {
+          description: `Status: ${TASK_STATUS_LABELS[updated.status]}`,
+        });
         await queryClient.invalidateQueries(trpc.task.all.queryFilter());
         await queryClient.invalidateQueries(trpc.task.recent.queryFilter());
       },

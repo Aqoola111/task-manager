@@ -21,11 +21,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { TASK_PRIORITY_LABELS } from "@/lib/task-ui";
+import type { TaskPriority } from "@/lib/models/types";
+import { TASK_PRIORITIES } from "@/lib/models/types";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/lib/trpc/client";
 
 type TaskFilterTab = "all" | "done" | "active";
+type PriorityFilter = "all" | TaskPriority;
 type ViewMode = "table" | "kanban";
 
 function KanbanSkeleton() {
@@ -44,6 +48,7 @@ function KanbanSkeleton() {
 export default function TasksPage() {
   const trpc = useTRPC();
   const [filter, setFilter] = useState<TaskFilterTab>("all");
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [view, setView] = useState<ViewMode>("table");
 
   const { data, isLoading, error } = useQuery(
@@ -53,17 +58,17 @@ export default function TasksPage() {
   const rows = data ?? [];
 
   const filteredRows = useMemo(() => {
+    let list = rows;
     if (filter === "done") {
-      return rows.filter((r) => r.status === "done");
+      list = list.filter((r) => r.status === "done");
+    } else if (filter === "active") {
+      list = list.filter((r) => r.status !== "done");
     }
-    if (filter === "active") {
-      return rows.filter((r) => r.status !== "done");
+    if (priorityFilter !== "all") {
+      list = list.filter((r) => r.priority === priorityFilter);
     }
-    return rows;
-  }, [rows, filter]);
-
-  const emptyForFilter =
-    rows.length > 0 && filteredRows.length === 0 && !isLoading;
+    return list;
+  }, [rows, filter, priorityFilter]);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -151,10 +156,6 @@ export default function TasksPage() {
           No tasks yet. Use the actions above to add a task or jump to your
           projects.
         </p>
-      ) : emptyForFilter ? (
-        <p className="py-12 text-center text-sm font-semibold text-muted-foreground">
-          No tasks match this filter.
-        </p>
       ) : view === "kanban" ? (
         <div className="min-w-0">
           <TasksKanbanBoard tasks={filteredRows} />
@@ -171,6 +172,31 @@ export default function TasksPage() {
             <TabsTrigger value="active">Not completed</TabsTrigger>
           </TabsList>
 
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <p
+              id="tasks-priority-filter-label"
+              className="text-xs font-bold uppercase tracking-wide text-muted-foreground"
+            >
+              Priority
+            </p>
+            <NativeSelect
+              size="sm"
+              className="min-w-[10rem] sm:w-48"
+              value={priorityFilter}
+              onChange={(e) =>
+                setPriorityFilter(e.target.value as PriorityFilter)
+              }
+              aria-labelledby="tasks-priority-filter-label"
+            >
+              <NativeSelectOption value="all">All priorities</NativeSelectOption>
+              {TASK_PRIORITIES.map((p) => (
+                <NativeSelectOption key={p} value={p}>
+                  {TASK_PRIORITY_LABELS[p]}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          </div>
+
           <Card className="min-w-0 overflow-hidden bg-card">
             <CardContent className="min-w-0 pt-4 sm:pt-6">
               <Table>
@@ -183,29 +209,40 @@ export default function TasksPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredRows.map((row) => (
-                    <TableRow key={row._id}>
-                      <TableCell className="max-w-[min(100vw,14rem)] truncate pl-4 font-bold sm:max-w-none">
-                        {row.name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="font-semibold">
-                          {TASK_PRIORITY_LABELS[row.priority]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="align-middle">
-                        <TaskStatusSelect
-                          taskId={row._id}
-                          status={row.status}
-                        />
-                      </TableCell>
-                      <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
-                        {row.updatedAt
-                          ? new Date(row.updatedAt).toLocaleDateString()
-                          : "—"}
+                  {filteredRows.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="py-14 text-center text-sm font-semibold text-muted-foreground"
+                      >
+                        No tasks match this filter.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    filteredRows.map((row) => (
+                      <TableRow key={row._id}>
+                        <TableCell className="max-w-[min(100vw,14rem)] truncate pl-4 font-bold sm:max-w-none">
+                          {row.name}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="font-semibold">
+                            {TASK_PRIORITY_LABELS[row.priority]}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="align-middle">
+                          <TaskStatusSelect
+                            taskId={row._id}
+                            status={row.status}
+                          />
+                        </TableCell>
+                        <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
+                          {row.updatedAt
+                            ? new Date(row.updatedAt).toLocaleDateString()
+                            : "—"}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

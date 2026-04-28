@@ -30,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+
 import { useTRPC } from "@/lib/trpc/client";
 import { PROJECT_STATUSES } from "@/lib/models/types";
 import { PROJECT_STATUS_ITEMS } from "@/lib/project-ui";
@@ -58,7 +60,10 @@ export function CreateProjectForm() {
 
   const create = useMutation(
     trpc.project.create.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (project) => {
+        toast.success("Project created", {
+          description: project.name,
+        });
         await queryClient.invalidateQueries(trpc.project.all.queryFilter());
         await queryClient.invalidateQueries(trpc.project.recent.queryFilter());
         router.push("/dashboard/projects");

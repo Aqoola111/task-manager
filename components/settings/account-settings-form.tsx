@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "next-themes";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,12 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  accountDisplayNameSchema,
+  changeEmailFormSchema,
+  type AccountDisplayNameInput,
+  type ChangeEmailFormInput,
+} from "@/lib/validation/settings";
 import { cn } from "@/lib/utils";
 
 export function AccountSettingsForm() {
@@ -30,75 +38,68 @@ export function AccountSettingsForm() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const [name, setName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
+  const currentEmail = session?.user?.email ?? "";
+
+  const emailSchema = useMemo(
+    () => changeEmailFormSchema(currentEmail),
+    [currentEmail],
+  );
+
+  const nameForm = useForm<AccountDisplayNameInput>({
+    resolver: zodResolver(accountDisplayNameSchema),
+    defaultValues: { name: "" },
+  });
+
+  const emailForm = useForm<ChangeEmailFormInput>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { newEmail: "" },
+  });
+
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
   const [emailMessage, setEmailMessage] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [savingName, setSavingName] = useState(false);
-  const [savingEmail, setSavingEmail] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const n = session?.user?.name;
     if (n !== undefined && n !== null) {
-      setName(n);
+      nameForm.reset({ name: n });
     }
-  }, [session?.user?.name]);
+  }, [session?.user?.name, nameForm.reset]);
 
-  const currentEmail = session?.user?.email ?? "";
-
-  async function onSaveName(e: React.FormEvent) {
-    e.preventDefault();
-    setProfileError(null);
+  async function onSaveName(data: AccountDisplayNameInput) {
     setProfileMessage(null);
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setProfileError("Name cannot be empty.");
-      return;
-    }
-    setSavingName(true);
-    const res = await authClient.updateUser({ name: trimmed });
-    setSavingName(false);
+    nameForm.clearErrors("root");
+    const res = await authClient.updateUser({ name: data.name });
     if (res.error) {
-      setProfileError(res.error.message ?? "Could not update name.");
+      nameForm.setError("root", {
+        message: res.error.message ?? "Could not update name.",
+      });
       return;
     }
     setProfileMessage("Name updated.");
     await refetch();
   }
 
-  async function onChangeEmail(e: React.FormEvent) {
-    e.preventDefault();
-    setEmailError(null);
+  async function onChangeEmail(data: ChangeEmailFormInput) {
     setEmailMessage(null);
-    const trimmed = newEmail.trim().toLowerCase();
-    if (!trimmed) {
-      setEmailError("Enter a new email address.");
-      return;
-    }
-    if (trimmed === currentEmail.toLowerCase()) {
-      setEmailError("That is already your email.");
-      return;
-    }
-    setSavingEmail(true);
+    emailForm.clearErrors("root");
     const origin =
       typeof window !== "undefined" ? window.location.origin : "";
     const res = await authClient.changeEmail({
-      newEmail: trimmed,
+      newEmail: data.newEmail.trim().toLowerCase(),
       callbackURL: `${origin}/dashboard/settings`,
     });
-    setSavingEmail(false);
     if (res.error) {
-      setEmailError(res.error.message ?? "Could not change email.");
+      emailForm.setError("root", {
+        message: res.error.message ?? "Could not change email.",
+      });
       return;
     }
     setEmailMessage(
       "Request processed. If your account uses email verification, check your inbox or the server logs in development.",
     );
-    setNewEmail("");
+    emailForm.reset({ newEmail: "" });
     await refetch();
   }
 
@@ -134,29 +135,42 @@ export function AccountSettingsForm() {
           <CardDescription>Your display name as shown in the app.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSaveName} className="space-y-4">
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="settings-name">Name</FieldLabel>
-                <Input
-                  id="settings-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  placeholder="Your name"
-                />
-              </Field>
-            </FieldGroup>
-            {profileError ? (
-              <FieldError>{profileError}</FieldError>
+          <form
+            className="space-y-4"
+            onSubmit={nameForm.handleSubmit(onSaveName)}
+            noValidate
+          >
+            {nameForm.formState.errors.root ? (
+              <FieldError>{nameForm.formState.errors.root.message}</FieldError>
             ) : null}
+            <FieldGroup>
+              <Controller
+                name="name"
+                control={nameForm.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="settings-name">Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id="settings-name"
+                      autoComplete="name"
+                      placeholder="Your name"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid ? (
+                      <FieldError errors={[fieldState.error]} />
+                    ) : null}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
             {profileMessage ? (
               <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                 {profileMessage}
               </p>
             ) : null}
-            <Button type="submit" disabled={savingName}>
-              {savingName ? "Saving…" : "Save name"}
+            <Button type="submit" disabled={nameForm.formState.isSubmitting}>
+              {nameForm.formState.isSubmitting ? "Saving…" : "Save name"}
             </Button>
           </form>
         </CardContent>
@@ -171,32 +185,51 @@ export function AccountSettingsForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onChangeEmail} className="space-y-4">
+          <form
+            className="space-y-4"
+            onSubmit={emailForm.handleSubmit(onChangeEmail)}
+            noValidate
+          >
+            {emailForm.formState.errors.root ? (
+              <FieldError>{emailForm.formState.errors.root.message}</FieldError>
+            ) : null}
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="settings-new-email">New email</FieldLabel>
-                <Input
-                  id="settings-new-email"
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                />
-                <FieldDescription>
-                  Changing email may send a confirmation link if your account
-                  is verified.
-                </FieldDescription>
-              </Field>
+              <Controller
+                name="newEmail"
+                control={emailForm.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="settings-new-email">New email</FieldLabel>
+                    <Input
+                      {...field}
+                      id="settings-new-email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldDescription>
+                      Changing email may send a confirmation link if your account
+                      is verified.
+                    </FieldDescription>
+                    {fieldState.invalid ? (
+                      <FieldError errors={[fieldState.error]} />
+                    ) : null}
+                  </Field>
+                )}
+              />
             </FieldGroup>
-            {emailError ? <FieldError>{emailError}</FieldError> : null}
             {emailMessage ? (
               <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                 {emailMessage}
               </p>
             ) : null}
-            <Button type="submit" variant="outline" disabled={savingEmail}>
-              {savingEmail ? "Sending…" : "Change email"}
+            <Button
+              type="submit"
+              variant="outline"
+              disabled={emailForm.formState.isSubmitting}
+            >
+              {emailForm.formState.isSubmitting ? "Sending…" : "Change email"}
             </Button>
           </form>
         </CardContent>
