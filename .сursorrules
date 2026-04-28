@@ -1,0 +1,23 @@
+# Project: Task Management Dashboard (Next.js 16 + tRPC + Better Auth)
+
+## Tech Stack & Requirements
+- **Framework**: Next.js 16 (App Router).
+- **Database**: MongoDB via Mongoose.
+- **Auth**: Better Auth (Official Mongoose adapter).
+- **CRITICAL**: Do NOT manually recreate Auth models (User, Session, etc.). Use Better Auth's official Mongoose schema integration.
+- **API**: tRPC (Protected procedures using Better Auth session).
+- **UI**: shadcn/ui (Customized to Apple Style).
+- **Routing**: Strict Nested Routing ONLY (No Dynamic Routes).
+  - Structure: `/dashboard`, `/dashboard/projects`, `/dashboard/tasks`, `/dashboard/tasks/create`, `/dashboard/settings`.
+
+## Design System (Apple Aesthetic)
+- **Visuals**: Premium Minimalism, Glassmorphism, `backdrop-blur-md`.
+- **Styling**: `rounded-2xl` or `rounded-3xl`, subtle borders (`border-black/5`), high whitespace usage.
+- **Tables**: shadcn Table with hidden heavy borders and smooth row transitions.
+
+## Development Protocol
+1. **Version Control**: Use Next.js 16 specific features (enhanced Server Actions, optimized metadata).
+2. **Mongoose Pattern**: Implement a global connection utility for Mongoose in Next.js to prevent multiple connection instances during hot reloads.
+3. **Docs**: Always prioritize official documentation for Better Auth (Mongoose adapter) and tRPC.
+
+In client use tanstack query with trpc (check the docs) to fetch the data, invalidate querys after mutation etc

@@ -1,26 +1,186 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* Brutalist accent surfaces — theme-aware via --palette-* (see :root / .dark). */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-neo-yellow: var(--palette-neo-yellow);
+  --color-neo-pink: var(--palette-neo-pink);
+  --color-neo-mint: var(--palette-neo-mint);
+  --color-neo-bone: var(--palette-neo-bone);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: 0.125rem;
+  --radius-md: 0.125rem;
+  --radius-lg: 0.125rem;
+  --radius-xl: 0.125rem;
+  --radius-2xl: 0.125rem;
+  --radius-3xl: 0.125rem;
+  --radius-4xl: 0.125rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Neo surfaces (light): soft pastels */
+  --palette-neo-bone: #f8fafc;
+  --palette-neo-yellow: #fff4bd;
+  --palette-neo-pink: #ffd1e3;
+  --palette-neo-mint: #d0f4de;
+
+  --background: #f8fafc;
+  --foreground: #172554;
+  --card: #fff4bd;
+  --card-foreground: #172554;
+  --popover: #ffffff;
+  --popover-foreground: #172554;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #d0f4de;
+  --secondary-foreground: #172554;
+  --muted: #e8eef9;
+  --muted-foreground: #334155;
+  --accent: #ffd1e3;
+  --accent-foreground: #172554;
+  --destructive: oklch(0.52 0.2 25);
+  --border: #1d4ed8;
+  --input: #1d4ed8;
+  --ring: #2563eb;
+  --chart-1: #fff4bd;
+  --chart-2: #ffd1e3;
+  --chart-3: #d0f4de;
+  --chart-4: #3b82f6;
+  --chart-5: #1e40af;
+  --radius: 0.125rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #172554;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #172554;
+  --sidebar-border: #1d4ed8;
+  --sidebar-ring: #2563eb;
+}
+
+/*
+ * Dark: layered neutrals, hairline borders (no bright blue frames on every control),
+ * soft primary, theme-aware neo pastels for the same components as light.
+ */
+.dark {
+  /* Slightly above --background so tab rails / shells read as a distinct band */
+  --palette-neo-bone: oklch(0.175 0.012 264);
+  --palette-neo-yellow: oklch(0.36 0.068 92);
+  --palette-neo-pink: oklch(0.32 0.048 343);
+  --palette-neo-mint: oklch(0.32 0.052 168);
+
+  --background: oklch(0.145 0.009 264);
+  --foreground: oklch(0.96 0.006 264);
+
+  --card: oklch(0.2 0.012 264);
+  --card-foreground: oklch(0.96 0.006 264);
+
+  --popover: oklch(0.22 0.014 264);
+  --popover-foreground: oklch(0.97 0.005 264);
+
+  --primary: oklch(0.74 0.13 252);
+  --primary-foreground: oklch(0.14 0.035 262);
+
+  --secondary: oklch(0.27 0.022 264);
+  --secondary-foreground: oklch(0.94 0.012 264);
+
+  --muted: oklch(0.26 0.018 264);
+  --muted-foreground: oklch(0.74 0.028 264);
+
+  --accent: oklch(0.3 0.035 278);
+  --accent-foreground: oklch(0.96 0.008 264);
+
+  --destructive: oklch(0.64 0.2 22);
+
+  /* Hairline separation — avoids the “neon blue box” look */
+  --border: oklch(1 0 0 / 0.12);
+  --input: oklch(1 0 0 / 0.16);
+  --ring: oklch(0.74 0.13 252 / 0.45);
+
+  --chart-1: oklch(0.4 0.075 92);
+  --chart-2: oklch(0.38 0.055 343);
+  --chart-3: oklch(0.38 0.055 168);
+  --chart-4: oklch(0.72 0.13 252);
+  --chart-5: oklch(0.62 0.08 252);
+
+  --sidebar: oklch(0.125 0.01 264);
+  --sidebar-foreground: oklch(0.93 0.012 264);
+  --sidebar-primary: oklch(0.74 0.13 252);
+  --sidebar-primary-foreground: oklch(0.14 0.035 262);
+  --sidebar-accent: oklch(0.24 0.022 264);
+  --sidebar-accent-foreground: oklch(0.96 0.006 264);
+  --sidebar-border: oklch(1 0 0 / 0.1);
+  --sidebar-ring: oklch(0.74 0.13 252 / 0.4);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-semibold text-foreground antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-black tracking-tight text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .neo-shadow {
+    box-shadow: 4px 4px 0 0 var(--border);
+  }
+  .neo-shadow-hover {
+    @apply transition-all duration-150;
+  }
+  .neo-shadow-hover:hover {
+    box-shadow: 1px 1px 0 0 var(--border);
+    transform: translate(3px, 3px);
+  }
+  .neo-shadow-hover:active {
+    box-shadow: none;
+    transform: translate(4px, 4px);
+  }
+  .neo-border {
+    @apply rounded-sm border-2 border-border;
+  }
 }
