@@ -160,7 +160,7 @@ export default function TasksPage() {
         </p>
       ) : view === "kanban" ? (
         <div className="min-w-0">
-          <TasksKanbanBoard tasks={filteredRows} />
+          <TasksKanbanBoard tasks={rows} />
         </div>
       ) : (
         <Tabs
