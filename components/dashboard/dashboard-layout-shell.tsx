@@ -1,17 +1,33 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { cn } from "@/lib/utils";
+
+/** Collapses the mobile drawer when the route changes (Link navigation). */
+function MobileSidebarRouteSync() {
+  const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [pathname, isMobile, setOpenMobile]);
+
+  return null;
+}
 
 export function DashboardLayoutShell({
   children,
@@ -24,6 +40,7 @@ export function DashboardLayoutShell({
   return (
     <TooltipProvider delay={0}>
       <SidebarProvider>
+        <MobileSidebarRouteSync />
         <AppSidebar />
         <SidebarInset className="flex min-h-svh min-w-0 flex-col bg-background pt-[env(safe-area-inset-top)]">
           <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b-[0.5px] border-border/60 bg-background/65 px-3 backdrop-blur-xl backdrop-saturate-150 transition-[height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 sm:px-4 md:px-6">

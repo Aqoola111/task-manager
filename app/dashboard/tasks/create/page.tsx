@@ -1,8 +1,23 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { CreateTaskForm } from "@/components/forms/create-task-form";
 import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+
+function CreateTaskFormFallback() {
+  return (
+    <Card className="border-0 bg-card">
+      <CardContent className="space-y-4 pt-6">
+        <Skeleton className="h-9 w-full rounded-lg" />
+        <Skeleton className="h-9 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function CreateTaskPage() {
   return (
@@ -32,7 +47,9 @@ export default function CreateTaskPage() {
       </header>
 
       <div className="w-full max-w-lg">
-        <CreateTaskForm />
+        <Suspense fallback={<CreateTaskFormFallback />}>
+          <CreateTaskForm />
+        </Suspense>
       </div>
     </div>
   );

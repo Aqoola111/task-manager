@@ -64,40 +64,66 @@ export default function ProjectsPage() {
               No projects yet.
             </p>
           ) : (
-            <LayoutGroup id="projects-table">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="pl-4">Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="pr-4 text-right">Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((row) => (
-                    <MotionTableRow
+            <>
+              <div className="space-y-2 sm:hidden">
+                {rows.map((row) => (
+                  <div
                     key={String(row._id)}
-                    layout
-                    transition={{
-                      type: "spring",
-                      stiffness: 380,
-                      damping: 38,
-                    }}
+                    className="rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 shadow-sm"
                   >
-                    <TableCell className="pl-4 font-bold">{row.name}</TableCell>
-                    <TableCell>
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="min-w-0 flex-1 text-sm font-bold leading-snug">
+                        {row.name}
+                      </span>
                       <StatusBadge variant="project" status={row.status} />
-                    </TableCell>
-                    <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
+                    </div>
+                    <p className="mt-1.5 text-[11px] font-medium text-muted-foreground tabular-nums">
                       {row.updatedAt
                         ? new Date(row.updatedAt).toLocaleDateString()
                         : "—"}
-                    </TableCell>
-                  </MotionTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </LayoutGroup>
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="hidden sm:block">
+                <LayoutGroup id="projects-table">
+                  <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="pl-4">Name</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="pr-4 text-right">Updated</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <MotionTableRow
+                        key={String(row._id)}
+                        layout
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 38,
+                        }}
+                      >
+                        <TableCell className="pl-4 font-bold">
+                          {row.name}
+                        </TableCell>
+                        <TableCell>
+                          <StatusBadge variant="project" status={row.status} />
+                        </TableCell>
+                        <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
+                          {row.updatedAt
+                            ? new Date(row.updatedAt).toLocaleDateString()
+                            : "—"}
+                        </TableCell>
+                      </MotionTableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                </LayoutGroup>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

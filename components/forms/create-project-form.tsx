@@ -66,7 +66,9 @@ export function CreateProjectForm() {
         });
         await queryClient.invalidateQueries(trpc.project.all.queryFilter());
         await queryClient.invalidateQueries(trpc.project.recent.queryFilter());
-        router.push("/dashboard/projects");
+        router.push(
+          `/dashboard/tasks/create?projectId=${encodeURIComponent(String(project._id))}`,
+        );
         router.refresh();
       },
     }),

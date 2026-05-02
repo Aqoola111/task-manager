@@ -2,10 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -59,6 +59,8 @@ export function CreateTaskForm() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const projectIdFromUrl = searchParams.get("projectId");
 
   const projects = useQuery(
     trpc.project.all.queryOptions(undefined, { retry: false }),
@@ -74,6 +76,7 @@ export function CreateTaskForm() {
       priority: "medium",
     },
   });
+  const { setValue } = form;
 
   const create = useMutation(
     trpc.task.create.mutationOptions({
@@ -93,8 +96,24 @@ export function CreateTaskForm() {
     create.mutate(data);
   }
 
-  const projectRows = projects.data ?? [];
+  const projectRows = useMemo(
+    () => projects.data ?? [],
+    [projects.data],
+  );
   const noProjects = !projects.isLoading && projectRows.length === 0;
+
+  useEffect(() => {
+    if (!projectIdFromUrl || projectRows.length === 0) return;
+    const match = projectRows.some(
+      (p) => String(p._id) === projectIdFromUrl,
+    );
+    if (match) {
+      setValue("projectId", projectIdFromUrl, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [projectIdFromUrl, projectRows, setValue]);
 
   const projectItems = useMemo(() => {
     const m: Record<string, React.ReactNode> = {

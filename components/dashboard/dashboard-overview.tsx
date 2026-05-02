@@ -250,46 +250,73 @@ export function DashboardOverview() {
                 No tasks yet
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="pl-4">Name</TableHead>
-                    <TableHead>Priority</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="pr-4 text-right">Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                <div className="space-y-2 sm:hidden">
                   {recentTasks.map((row) => (
-                    <MotionTableRow
+                    <div
                       key={String(row._id)}
-                      layout
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 38,
-                      }}
+                      className="rounded-xl border border-border/60 bg-card/90 px-3 py-2 shadow-sm"
                     >
-                      <TableCell className="max-w-[180px] truncate pl-4 font-medium">
+                      <p className="text-sm font-medium leading-snug">
                         {row.name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary" className="text-[11px]">
                           {TASK_PRIORITY_LABELS[row.priority]}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
                         <StatusBadge variant="task" status={row.status} />
-                      </TableCell>
-                      <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums text-xs">
+                      </div>
+                      <p className="mt-1.5 text-[11px] font-medium text-muted-foreground tabular-nums">
                         {row.updatedAt
                           ? new Date(row.updatedAt).toLocaleDateString()
                           : "—"}
-                      </TableCell>
-                    </MotionTableRow>
+                      </p>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+                <div className="hidden sm:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="pl-4">Name</TableHead>
+                        <TableHead>Priority</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="pr-4 text-right">Updated</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {recentTasks.map((row) => (
+                        <MotionTableRow
+                          key={String(row._id)}
+                          layout
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 38,
+                          }}
+                        >
+                          <TableCell className="max-w-[180px] truncate pl-4 font-medium">
+                            {row.name}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">
+                              {TASK_PRIORITY_LABELS[row.priority]}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge variant="task" status={row.status} />
+                          </TableCell>
+                          <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums text-xs">
+                            {row.updatedAt
+                              ? new Date(row.updatedAt).toLocaleDateString()
+                              : "—"}
+                          </TableCell>
+                        </MotionTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
@@ -308,40 +335,67 @@ export function DashboardOverview() {
                 No projects yet
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="pl-4">Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="pr-4 text-right">Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                <div className="space-y-2 sm:hidden">
                   {recentProjects.map((row) => (
-                    <MotionTableRow
+                    <div
                       key={String(row._id)}
-                      layout
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 38,
-                      }}
+                      className="rounded-xl border border-border/60 bg-card/90 px-3 py-2 shadow-sm"
                     >
-                      <TableCell className="max-w-[140px] truncate pl-4 font-bold">
-                        {row.name}
-                      </TableCell>
-                      <TableCell>
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="min-w-0 flex-1 text-sm font-bold leading-snug">
+                          {row.name}
+                        </span>
                         <StatusBadge variant="project" status={row.status} />
-                      </TableCell>
-                      <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums text-xs">
+                      </div>
+                      <p className="mt-1.5 text-[11px] font-medium text-muted-foreground tabular-nums">
                         {row.updatedAt
                           ? new Date(row.updatedAt).toLocaleDateString()
                           : "—"}
-                      </TableCell>
-                    </MotionTableRow>
+                      </p>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+                <div className="hidden sm:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="pl-4">Name</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="pr-4 text-right">Updated</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {recentProjects.map((row) => (
+                        <MotionTableRow
+                          key={String(row._id)}
+                          layout
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 38,
+                          }}
+                        >
+                          <TableCell className="max-w-[140px] truncate pl-4 font-bold">
+                            {row.name}
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge
+                              variant="project"
+                              status={row.status}
+                            />
+                          </TableCell>
+                          <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums text-xs">
+                            {row.updatedAt
+                              ? new Date(row.updatedAt).toLocaleDateString()
+                              : "—"}
+                          </TableCell>
+                        </MotionTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

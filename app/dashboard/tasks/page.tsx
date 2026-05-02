@@ -201,62 +201,95 @@ export default function TasksPage() {
 
           <Card className="min-w-0 overflow-hidden bg-card">
             <CardContent className="min-w-0 pt-4 sm:pt-6">
-              <LayoutGroup id="tasks-table">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="pl-4">Name</TableHead>
-                      <TableHead>Priority</TableHead>
-                      <TableHead className="min-w-[10rem]">Status</TableHead>
-                      <TableHead className="pr-4 text-right">Updated</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredRows.length === 0 ? (
-                      <TableRow>
-                        <TableCell
-                          colSpan={4}
-                          className="py-14 text-center text-sm font-semibold text-muted-foreground"
-                        >
-                          No tasks match this filter.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredRows.map((row) => (
-                        <MotionTableRow
-                          key={row._id}
-                          layout
-                          transition={{
-                            type: "spring",
-                            stiffness: 380,
-                            damping: 38,
-                          }}
-                        >
-                          <TableCell className="max-w-[min(100vw,14rem)] truncate pl-4 font-bold sm:max-w-none">
-                            {row.name}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="font-semibold">
-                              {TASK_PRIORITY_LABELS[row.priority]}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="align-middle">
-                            <TaskStatusSelect
-                              taskId={row._id}
-                              status={row.status}
-                            />
-                          </TableCell>
-                          <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
-                            {row.updatedAt
-                              ? new Date(row.updatedAt).toLocaleDateString()
-                              : "—"}
-                          </TableCell>
-                        </MotionTableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </LayoutGroup>
+              {filteredRows.length === 0 ? (
+                <p className="py-10 text-center text-sm font-semibold text-muted-foreground sm:py-14">
+                  No tasks match this filter.
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-2 sm:hidden">
+                    {filteredRows.map((row) => (
+                      <div
+                        key={row._id}
+                        className="rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 shadow-sm"
+                      >
+                        <p className="text-sm font-bold leading-snug">
+                          {row.name}
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <Badge
+                            variant="secondary"
+                            className="text-[11px] font-semibold"
+                          >
+                            {TASK_PRIORITY_LABELS[row.priority]}
+                          </Badge>
+                          <TaskStatusSelect
+                            taskId={row._id}
+                            status={row.status}
+                          />
+                        </div>
+                        <p className="mt-2 text-[11px] font-medium text-muted-foreground tabular-nums">
+                          {row.updatedAt
+                            ? new Date(row.updatedAt).toLocaleDateString()
+                            : "—"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="hidden sm:block">
+                    <LayoutGroup id="tasks-table">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent">
+                            <TableHead className="pl-4">Name</TableHead>
+                            <TableHead>Priority</TableHead>
+                            <TableHead className="min-w-[10rem]">Status</TableHead>
+                            <TableHead className="pr-4 text-right">
+                              Updated
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredRows.map((row) => (
+                            <MotionTableRow
+                              key={row._id}
+                              layout
+                              transition={{
+                                type: "spring",
+                                stiffness: 380,
+                                damping: 38,
+                              }}
+                            >
+                              <TableCell className="max-w-[min(100vw,14rem)] truncate pl-4 font-bold sm:max-w-none">
+                                {row.name}
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="secondary"
+                                  className="font-semibold"
+                                >
+                                  {TASK_PRIORITY_LABELS[row.priority]}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="align-middle">
+                                <TaskStatusSelect
+                                  taskId={row._id}
+                                  status={row.status}
+                                />
+                              </TableCell>
+                              <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
+                                {row.updatedAt
+                                  ? new Date(row.updatedAt).toLocaleDateString()
+                                  : "—"}
+                              </TableCell>
+                            </MotionTableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </LayoutGroup>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </Tabs>
