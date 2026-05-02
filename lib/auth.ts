@@ -17,10 +17,17 @@ export async function getAuth(): Promise<AuthInstance> {
   await connectMongoose();
   const db = getMongoDb();
 
-  const baseURL =
+  const rawBase =
     process.env.BETTER_AUTH_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
     "http://localhost:3000";
+  const baseURL = (() => {
+    try {
+      return new URL(rawBase).origin;
+    } catch {
+      return rawBase.replace(/\/+$/, "");
+    }
+  })();
 
   const instance = betterAuth({
     database: mongodbAdapter(db, {

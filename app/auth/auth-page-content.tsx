@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -33,7 +33,6 @@ import {
 import { cn } from "@/lib/utils";
 
 export function AuthPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
@@ -69,8 +68,9 @@ export function AuthPageContent() {
       });
       return;
     }
-    router.push(callbackUrl);
-    router.refresh();
+    // Full navigation so the new session cookie is always sent; client-side
+    // router.push can race middleware before the cookie is visible.
+    window.location.assign(callbackUrl);
   });
 
   const onSignUp = signUpForm.handleSubmit(async (data) => {
@@ -87,8 +87,7 @@ export function AuthPageContent() {
       });
       return;
     }
-    router.push(callbackUrl);
-    router.refresh();
+    window.location.assign(callbackUrl);
   });
 
   function handleTabChange(next: string) {
