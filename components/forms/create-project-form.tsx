@@ -77,7 +77,7 @@ export function CreateProjectForm() {
   }
 
   return (
-    <Card className="border-border bg-neo-mint">
+    <Card className="border-0 bg-card">
       <CardHeader>
         <CardTitle>New project</CardTitle>
         <CardDescription>

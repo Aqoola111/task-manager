@@ -99,7 +99,7 @@ export function AuthPageContent() {
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-x-hidden overflow-y-auto border-b border-border bg-background px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))] sm:p-6">
-      <Card className="w-full max-w-md border-2 border-border bg-neo-pink backdrop-blur-md">
+      <Card className="w-full max-w-md border-0 bg-card/90 backdrop-blur-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-black tracking-tight">
             Welcome

@@ -24,11 +24,11 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-sm border-2 border-border bg-muted p-1 font-bold text-muted-foreground shadow-[3px_3px_0_0_var(--border)] group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
+  "group/tabs-list inline-flex w-fit items-center justify-center rounded-xl border-[0.5px] border-border/80 bg-muted/40 p-1 font-medium text-muted-foreground shadow-inner backdrop-blur-sm group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none data-[variant=line]:border-0 data-[variant=line]:bg-transparent data-[variant=line]:shadow-none",
   {
     variants: {
       variant: {
-        default: "bg-neo-bone",
+        default: "bg-muted/35",
         line: "gap-1 border-0 bg-transparent shadow-none",
       },
     },
@@ -58,8 +58,8 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-[calc(100%-2px)] flex-1 items-center justify-center gap-1.5 rounded-sm border-2 border-transparent px-3 py-1 text-sm font-bold whitespace-nowrap transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "data-active:border-border data-active:bg-neo-yellow data-active:text-foreground data-active:shadow-[2px_2px_0_0_var(--border)]",
+        "relative inline-flex h-[calc(100%-2px)] flex-1 items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data-active:border-[0.5px] data-active:border-primary/25 data-active:bg-card data-active:text-foreground data-active:shadow-cozy",
         className
       )}
       {...props}
@@ -71,7 +71,7 @@ function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
   return (
     <TabsPrimitive.Panel
       data-slot="tabs-content"
-      className={cn("flex-1 text-sm font-semibold outline-none", className)}
+      className={cn("flex-1 text-sm font-medium outline-none", className)}
       {...props}
     />
   )

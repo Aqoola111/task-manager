@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { LayoutGroup } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
 import { DataTableSkeleton } from "@/components/dashboard/data-table-skeleton";
+import { MotionTableRow } from "@/components/motion/motion-table-row";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,17 +64,26 @@ export default function ProjectsPage() {
               No projects yet.
             </p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="pl-4">Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="pr-4 text-right">Updated</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={String(row._id)}>
+            <LayoutGroup id="projects-table">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="pl-4">Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="pr-4 text-right">Updated</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.map((row) => (
+                    <MotionTableRow
+                    key={String(row._id)}
+                    layout
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 38,
+                    }}
+                  >
                     <TableCell className="pl-4 font-bold">{row.name}</TableCell>
                     <TableCell>
                       <StatusBadge variant="project" status={row.status} />
@@ -82,10 +93,11 @@ export default function ProjectsPage() {
                         ? new Date(row.updatedAt).toLocaleDateString()
                         : "—"}
                     </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                  </MotionTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </LayoutGroup>
           )}
         </CardContent>
       </Card>

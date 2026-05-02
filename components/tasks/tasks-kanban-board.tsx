@@ -16,11 +16,11 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { LayoutGroup, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import type { SerializedTask } from "@/lib/serialize/task-project";
-import type { TaskStatus } from "@/lib/models/types";
+import type { TaskPriority, TaskStatus } from "@/lib/models/types";
 import { TASK_STATUSES } from "@/lib/models/types";
 import { toast } from "sonner";
 
@@ -28,15 +28,11 @@ import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS } from "@/lib/task-ui";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 
-const COLUMN_SURFACE: Record<TaskStatus, string> = {
-  todo:
-    "border-slate-300/75 bg-slate-50/95 dark:border-white/12 dark:bg-muted/55",
-  in_progress:
-    "border-sky-300/75 bg-sky-50/95 dark:border-sky-400/25 dark:bg-sky-950/40",
-  done:
-    "border-emerald-300/75 bg-emerald-50/95 dark:border-emerald-400/22 dark:bg-emerald-950/35",
-  cancelled:
-    "border-rose-300/75 bg-rose-50/95 dark:border-rose-400/22 dark:bg-rose-950/35",
+const PRIORITY_DOT: Record<TaskPriority, string> = {
+  low: "bg-slate-400/80 dark:bg-slate-500/90",
+  medium: "bg-sky-400/80 dark:bg-sky-500/90",
+  high: "bg-amber-400/85 dark:bg-amber-500/90",
+  urgent: "bg-rose-400/90 dark:bg-rose-500/90",
 };
 
 function columnId(status: TaskStatus) {
@@ -73,12 +69,21 @@ function resolveDropTarget(
 function KanbanCardFace({ task }: { task: SerializedTask }) {
   return (
     <>
-      <p className="font-bold leading-snug">{task.name}</p>
+      <p className="font-medium leading-snug text-foreground">{task.name}</p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        <Badge variant="secondary" className="text-[10px] font-semibold">
-          {TASK_PRIORITY_LABELS[task.priority]}
-        </Badge>
-        <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn(
+              "size-2 shrink-0 rounded-full",
+              PRIORITY_DOT[task.priority],
+            )}
+            title={TASK_PRIORITY_LABELS[task.priority]}
+          />
+          <span className="text-[11px] font-medium text-primary/75 dark:text-primary/80">
+            {TASK_PRIORITY_LABELS[task.priority]}
+          </span>
+        </div>
+        <span className="text-[10px] font-medium text-muted-foreground/80 tabular-nums">
           {task.updatedAt
             ? new Date(task.updatedAt).toLocaleDateString()
             : ""}
@@ -100,28 +105,33 @@ function KanbanTaskCard({ task }: { task: SerializedTask }) {
     : undefined;
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
       style={style}
+      layout={!isDragging}
+      layoutId={isDragging ? undefined : `kanban-task-${task._id}`}
+      transition={{ type: "spring", stiffness: 420, damping: 34 }}
       className={cn(
-        "touch-none rounded-sm border-2 border-border bg-card p-3 shadow-[3px_3px_0_0_var(--border)]",
-        isDragging ? "opacity-40" : "opacity-100",
+        "touch-none rounded-xl border-0 bg-card p-3 shadow-cozy transition-opacity duration-200 card-cozy-hover",
+        isDragging ? "opacity-30" : "opacity-100",
         "cursor-grab active:cursor-grabbing",
       )}
       {...listeners}
       {...attributes}
     >
       <KanbanCardFace task={task} />
-    </div>
+    </motion.div>
   );
 }
 
 function KanbanColumn({
   status,
   tasks,
+  isDragging,
 }: {
   status: TaskStatus;
   tasks: SerializedTask[];
+  isDragging: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: columnId(status),
@@ -131,27 +141,34 @@ function KanbanColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex min-h-[min(70vh,28rem)] min-w-[min(100vw-2rem,17rem)] shrink-0 flex-col rounded-sm border-2 sm:min-w-[17.5rem]",
-        COLUMN_SURFACE[status],
-        isOver && "ring-2 ring-primary/40 ring-offset-2 ring-offset-background",
+        "flex min-h-[min(70vh,26rem)] min-w-[min(100vw-2rem,16rem)] shrink-0 flex-col sm:min-w-[17rem]",
+        isOver &&
+          isDragging &&
+          "rounded-2xl ring-1 ring-primary/15 ring-offset-2 ring-offset-background",
       )}
     >
-      <div className="border-b-2 border-border/60 px-3 py-2">
-        <h3 className="text-xs font-black uppercase tracking-wide">
+      <div className="border-b-[0.5px] border-border/50 pb-3">
+        <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           {TASK_STATUS_LABELS[status]}
         </h3>
-        <p className="text-[10px] font-semibold text-muted-foreground">
+        <p className="mt-0.5 text-[11px] font-medium text-muted-foreground/70">
           {tasks.length} task{tasks.length === 1 ? "" : "s"}
         </p>
       </div>
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2">
-        {tasks.length === 0 ? (
-          <p className="py-6 text-center text-xs font-semibold text-muted-foreground">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto pt-3">
+        {tasks.length === 0 && !(isOver && isDragging) ? (
+          <p className="py-8 text-center text-[11px] font-medium text-muted-foreground/80">
             Drop tasks here
           </p>
         ) : (
           tasks.map((t) => <KanbanTaskCard key={t._id} task={t} />)
         )}
+        {isOver && isDragging ? (
+          <div
+            className="min-h-14 shrink-0 rounded-xl border border-dashed border-primary/30 bg-primary/[0.04] dark:bg-primary/[0.08]"
+            aria-hidden
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -222,6 +239,8 @@ export function TasksKanbanBoard({ tasks }: { tasks: SerializedTask[] }) {
     }),
   );
 
+  const isDragging = activeTask !== null;
+
   function handleDragStart(event: DragStartEvent) {
     const id = String(event.active.id);
     if (!id.startsWith("task:")) return;
@@ -257,19 +276,22 @@ export function TasksKanbanBoard({ tasks }: { tasks: SerializedTask[] }) {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="flex gap-3 overflow-x-auto pb-2 sm:gap-4">
-        {TASK_STATUSES.map((status) => (
-          <KanbanColumn
-            key={status}
-            status={status}
-            tasks={grouped[status]}
-          />
-        ))}
-      </div>
+      <LayoutGroup id="tasks-kanban">
+        <div className="flex gap-6 overflow-x-auto pb-2 sm:gap-8">
+          {TASK_STATUSES.map((status) => (
+            <KanbanColumn
+              key={status}
+              status={status}
+              tasks={grouped[status]}
+              isDragging={isDragging}
+            />
+          ))}
+        </div>
+      </LayoutGroup>
 
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <div className="cursor-grabbing rounded-sm border-2 border-border bg-card p-3 shadow-[5px_5px_0_0_var(--border)]">
+          <div className="cursor-grabbing rounded-xl border-0 bg-card p-3 shadow-cozy-md backdrop-blur-sm">
             <KanbanCardFace task={activeTask} />
           </div>
         ) : null}

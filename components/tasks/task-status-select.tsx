@@ -60,7 +60,7 @@ export function TaskStatusSelect({
       <SelectTrigger
         size="sm"
         className={cn(
-          "h-8 min-w-[9rem] max-w-[min(100%,11rem)] border-2 text-xs shadow-none sm:min-w-[10rem] sm:text-sm",
+          "h-8 min-w-[9rem] max-w-[min(100%,11rem)] border-[0.5px] border-border/60 text-xs shadow-cozy sm:min-w-[10rem] sm:text-sm",
           TASK_STATUS_SELECT_TRIGGER[status],
         )}
         aria-busy={update.isPending}

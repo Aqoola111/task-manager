@@ -25,14 +25,14 @@ export function DashboardLayoutShell({
     <TooltipProvider delay={0}>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset className="flex min-h-svh min-w-0 flex-col border-l border-border bg-background pt-[env(safe-area-inset-top)]">
-          <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b-2 border-border bg-background/90 px-3 backdrop-blur-md transition-[height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 sm:px-4 md:px-6">
+        <SidebarInset className="flex min-h-svh min-w-0 flex-col bg-background pt-[env(safe-area-inset-top)]">
+          <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b-[0.5px] border-border/60 bg-background/65 px-3 backdrop-blur-xl backdrop-saturate-150 transition-[height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 sm:px-4 md:px-6">
             <SidebarTrigger className="-ml-0.5 shrink-0 sm:-ml-1" />
             <Separator
               orientation="vertical"
-              className="mr-1 h-4 shrink-0 data-[orientation=vertical]:h-4 sm:mr-2"
+              className="mr-1 h-4 shrink-0 bg-border/50 data-[orientation=vertical]:h-4 sm:mr-2"
             />
-            <span className="min-w-0 truncate text-xs font-bold text-muted-foreground sm:text-sm">
+            <span className="min-w-0 truncate text-xs font-medium tracking-wide text-muted-foreground sm:text-sm">
               Workspace
             </span>
           </header>

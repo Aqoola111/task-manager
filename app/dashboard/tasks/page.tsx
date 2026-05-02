@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { LayoutGroup } from "framer-motion";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { LayoutGrid, Table as TableIcon } from "lucide-react";
 
 import { DataTableSkeleton } from "@/components/dashboard/data-table-skeleton";
+import { MotionTableRow } from "@/components/motion/motion-table-row";
 import { TaskStatusSelect } from "@/components/tasks/task-status-select";
 import { TasksKanbanBoard } from "@/components/tasks/tasks-kanban-board";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +40,7 @@ function KanbanSkeleton() {
       {Array.from({ length: 4 }).map((_, i) => (
         <Skeleton
           key={i}
-          className="h-[min(70vh,28rem)] min-w-[min(100vw-2rem,17rem)] shrink-0 rounded-sm sm:min-w-[17.5rem]"
+          className="h-[min(70vh,28rem)] min-w-[min(100vw-2rem,17rem)] shrink-0 rounded-2xl sm:min-w-[17.5rem]"
         />
       ))}
     </div>
@@ -74,11 +76,11 @@ export default function TasksPage() {
     <div className="space-y-6 sm:space-y-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <p className="text-sm font-bold text-muted-foreground">Workspace</p>
-          <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
+          <p className="text-sm font-medium text-muted-foreground">Workspace</p>
+          <h1 className="text-2xl font-medium tracking-tight sm:text-3xl">
             Tasks
           </h1>
-          <p className="mt-2 font-semibold text-muted-foreground">
+          <p className="mt-2 font-medium text-muted-foreground">
             Table with filters, or Kanban — drag cards between columns to update
             status.
           </p>
@@ -104,7 +106,7 @@ export default function TasksPage() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div
-          className="inline-flex w-full max-w-md gap-1 rounded-sm border-2 border-border bg-muted/40 p-1 sm:w-auto"
+          className="inline-flex w-full max-w-md gap-1 rounded-xl border-[0.5px] border-border/70 bg-muted/35 p-1 shadow-inner backdrop-blur-sm sm:w-auto"
           role="group"
           aria-label="View mode"
         >
@@ -112,9 +114,9 @@ export default function TasksPage() {
             type="button"
             onClick={() => setView("table")}
             className={cn(
-              "inline-flex flex-1 items-center justify-center gap-2 rounded-sm px-3 py-2 text-xs font-bold transition-all sm:flex-initial sm:text-sm",
+              "inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all sm:flex-initial sm:text-sm",
               view === "table"
-                ? "bg-neo-yellow text-foreground shadow-[2px_2px_0_0_var(--border)]"
+                ? "bg-card text-foreground shadow-cozy"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -125,9 +127,9 @@ export default function TasksPage() {
             type="button"
             onClick={() => setView("kanban")}
             className={cn(
-              "inline-flex flex-1 items-center justify-center gap-2 rounded-sm px-3 py-2 text-xs font-bold transition-all sm:flex-initial sm:text-sm",
+              "inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all sm:flex-initial sm:text-sm",
               view === "kanban"
-                ? "bg-neo-yellow text-foreground shadow-[2px_2px_0_0_var(--border)]"
+                ? "bg-card text-foreground shadow-cozy"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -199,52 +201,62 @@ export default function TasksPage() {
 
           <Card className="min-w-0 overflow-hidden bg-card">
             <CardContent className="min-w-0 pt-4 sm:pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="pl-4">Name</TableHead>
-                    <TableHead>Priority</TableHead>
-                    <TableHead className="min-w-[10rem]">Status</TableHead>
-                    <TableHead className="pr-4 text-right">Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRows.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="py-14 text-center text-sm font-semibold text-muted-foreground"
-                      >
-                        No tasks match this filter.
-                      </TableCell>
+              <LayoutGroup id="tasks-table">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="pl-4">Name</TableHead>
+                      <TableHead>Priority</TableHead>
+                      <TableHead className="min-w-[10rem]">Status</TableHead>
+                      <TableHead className="pr-4 text-right">Updated</TableHead>
                     </TableRow>
-                  ) : (
-                    filteredRows.map((row) => (
-                      <TableRow key={row._id}>
-                        <TableCell className="max-w-[min(100vw,14rem)] truncate pl-4 font-bold sm:max-w-none">
-                          {row.name}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="font-semibold">
-                            {TASK_PRIORITY_LABELS[row.priority]}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="align-middle">
-                          <TaskStatusSelect
-                            taskId={row._id}
-                            status={row.status}
-                          />
-                        </TableCell>
-                        <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
-                          {row.updatedAt
-                            ? new Date(row.updatedAt).toLocaleDateString()
-                            : "—"}
+                  </TableHeader>
+                  <TableBody>
+                    {filteredRows.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={4}
+                          className="py-14 text-center text-sm font-semibold text-muted-foreground"
+                        >
+                          No tasks match this filter.
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      filteredRows.map((row) => (
+                        <MotionTableRow
+                          key={row._id}
+                          layout
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 38,
+                          }}
+                        >
+                          <TableCell className="max-w-[min(100vw,14rem)] truncate pl-4 font-bold sm:max-w-none">
+                            {row.name}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="font-semibold">
+                              {TASK_PRIORITY_LABELS[row.priority]}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="align-middle">
+                            <TaskStatusSelect
+                              taskId={row._id}
+                              status={row.status}
+                            />
+                          </TableCell>
+                          <TableCell className="pr-4 text-right font-semibold text-muted-foreground tabular-nums">
+                            {row.updatedAt
+                              ? new Date(row.updatedAt).toLocaleDateString()
+                              : "—"}
+                          </TableCell>
+                        </MotionTableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </LayoutGroup>
             </CardContent>
           </Card>
         </Tabs>

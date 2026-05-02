@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MotionTableRow } from "@/components/motion/motion-table-row";
 import {
   Table,
   TableBody,
@@ -43,13 +44,13 @@ function StatMini({
   return (
     <Card
       size="sm"
-      className="bg-card py-2 shadow-[3px_3px_0_0_var(--border)]"
+      className="border-0 bg-card py-2"
     >
       <CardHeader className="space-y-0.5 px-3 py-0 pb-1">
-        <CardDescription className="text-[10px] font-bold uppercase leading-tight tracking-wide">
+        <CardDescription className="text-[10px] font-medium uppercase leading-tight tracking-wide text-muted-foreground">
           {label}
         </CardDescription>
-        <CardTitle className="text-xl font-black tabular-nums leading-none">
+        <CardTitle className="text-xl font-medium tabular-nums leading-none">
           {loading ? (
             <Skeleton className="h-7 w-10 rounded-sm" />
           ) : (
@@ -121,18 +122,18 @@ export function DashboardOverview() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <header className="relative overflow-hidden rounded-sm border-2 border-border bg-card px-4 py-6 shadow-[6px_6px_0_0_var(--border)] backdrop-blur-sm sm:px-8 sm:py-8 md:px-10 md:py-10">
+      <header className="relative overflow-hidden rounded-2xl border-0 bg-card px-4 py-6 shadow-cozy backdrop-blur-sm sm:px-8 sm:py-8 md:px-10 md:py-10">
         <div className="relative flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 space-y-3">
-            <div className="inline-flex w-fit items-center gap-2 rounded-sm border-2 border-border bg-neo-yellow px-3 py-1 text-xs font-black uppercase tracking-wide text-foreground">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/12 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
               <Sparkles className="size-3.5 shrink-0" aria-hidden />
               Overview
             </div>
-            <h1 className="text-2xl font-black tracking-tight sm:text-3xl md:text-4xl">
+            <h1 className="text-2xl font-medium tracking-tight sm:text-3xl md:text-4xl">
               Task Management Dashboard
             </h1>
-            <p className="max-w-xl font-semibold text-muted-foreground">
-              Track projects and tasks with bold clarity.
+            <p className="max-w-xl font-medium text-muted-foreground">
+              Track projects and tasks with calm clarity.
             </p>
           </div>
           <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3">
@@ -177,7 +178,7 @@ export function DashboardOverview() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <Card className="bg-neo-yellow">
+        <Card className="border-0 bg-card">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -188,9 +189,9 @@ export function DashboardOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-black tabular-nums tracking-tight">
+            <p className="text-3xl font-medium tabular-nums tracking-tight">
               {projectsAll.isLoading ? (
-                <Skeleton className="h-9 w-14 rounded-sm" />
+                <Skeleton className="h-9 w-14 rounded-lg" />
               ) : (
                 projectCount ?? "—"
               )}
@@ -206,7 +207,7 @@ export function DashboardOverview() {
           </CardContent>
         </Card>
 
-        <Card className="bg-neo-pink">
+        <Card className="border-0 bg-card">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -219,9 +220,9 @@ export function DashboardOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-black tabular-nums tracking-tight">
+            <p className="text-3xl font-medium tabular-nums tracking-tight">
               {tasksAll.isLoading ? (
-                <Skeleton className="h-9 w-14 rounded-sm" />
+                <Skeleton className="h-9 w-14 rounded-lg" />
               ) : (
                 activeTaskCount ?? "—"
               )}
@@ -239,7 +240,7 @@ export function DashboardOverview() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="px-1 text-lg font-black tracking-tight">Latest tasks</h2>
+        <h2 className="px-1 text-lg font-medium tracking-tight">Latest tasks</h2>
         <Card className="min-w-0 overflow-hidden bg-card">
           <CardContent className="min-w-0 pt-4">
             {recentTasksQuery.isLoading ? (
@@ -260,8 +261,16 @@ export function DashboardOverview() {
                 </TableHeader>
                 <TableBody>
                   {recentTasks.map((row) => (
-                    <TableRow key={String(row._id)}>
-                      <TableCell className="max-w-[180px] truncate pl-4 font-bold">
+                    <MotionTableRow
+                      key={String(row._id)}
+                      layout
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 38,
+                      }}
+                    >
+                      <TableCell className="max-w-[180px] truncate pl-4 font-medium">
                         {row.name}
                       </TableCell>
                       <TableCell>
@@ -277,7 +286,7 @@ export function DashboardOverview() {
                           ? new Date(row.updatedAt).toLocaleDateString()
                           : "—"}
                       </TableCell>
-                    </TableRow>
+                    </MotionTableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -287,10 +296,10 @@ export function DashboardOverview() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="px-1 text-lg font-black tracking-tight">
+        <h2 className="px-1 text-lg font-medium tracking-tight">
           Recent projects
         </h2>
-        <Card className="min-w-0 overflow-hidden bg-neo-mint">
+        <Card className="min-w-0 overflow-hidden border-0 bg-card">
           <CardContent className="min-w-0 pt-4">
             {recentProjectsQuery.isLoading ? (
               <TableSkeleton rows={4} />
@@ -309,7 +318,15 @@ export function DashboardOverview() {
                 </TableHeader>
                 <TableBody>
                   {recentProjects.map((row) => (
-                    <TableRow key={String(row._id)}>
+                    <MotionTableRow
+                      key={String(row._id)}
+                      layout
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 38,
+                      }}
+                    >
                       <TableCell className="max-w-[140px] truncate pl-4 font-bold">
                         {row.name}
                       </TableCell>
@@ -321,7 +338,7 @@ export function DashboardOverview() {
                           ? new Date(row.updatedAt).toLocaleDateString()
                           : "—"}
                       </TableCell>
-                    </TableRow>
+                    </MotionTableRow>
                   ))}
                 </TableBody>
               </Table>

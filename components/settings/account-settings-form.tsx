@@ -129,7 +129,7 @@ export function AccountSettingsForm() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-2 border-border bg-card">
+      <Card className="border-0 bg-card">
         <CardHeader>
           <CardTitle className="text-lg">Profile</CardTitle>
           <CardDescription>Your display name as shown in the app.</CardDescription>
@@ -176,7 +176,7 @@ export function AccountSettingsForm() {
         </CardContent>
       </Card>
 
-      <Card className="border-2 border-border bg-card">
+      <Card className="border-0 bg-card">
         <CardHeader>
           <CardTitle className="text-lg">Email</CardTitle>
           <CardDescription>
@@ -235,7 +235,7 @@ export function AccountSettingsForm() {
         </CardContent>
       </Card>
 
-      <Card className="border-2 border-border bg-card">
+      <Card className="border-0 bg-card">
         <CardHeader>
           <CardTitle className="text-lg">Appearance</CardTitle>
           <CardDescription>
@@ -259,10 +259,10 @@ export function AccountSettingsForm() {
                   aria-checked={theme === id}
                   onClick={() => setTheme(id)}
                   className={cn(
-                    "inline-flex flex-1 items-center justify-center gap-2 rounded-sm border-2 border-border px-4 py-2.5 text-sm font-bold transition-all sm:flex-initial",
+                    "inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-[0.5px] border-border/60 px-4 py-2.5 text-sm font-medium transition-all sm:flex-initial",
                     theme === id
-                      ? "bg-neo-yellow text-foreground shadow-[3px_3px_0_0_var(--border)]"
-                      : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+                      ? "bg-card text-foreground shadow-cozy"
+                      : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                   )}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden />

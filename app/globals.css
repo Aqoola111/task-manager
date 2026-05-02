@@ -4,7 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Brutalist accent surfaces — theme-aware via --palette-* (see :root / .dark). */
+/*
+ * Cozy Digital Workspace — milky canvas, pastel accents (sage / sky / lavender),
+ * hairline borders, xl–2xl radii, soft layered shadows, glass-friendly tokens.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -14,6 +17,9 @@
   --color-neo-pink: var(--palette-neo-pink);
   --color-neo-mint: var(--palette-neo-mint);
   --color-neo-bone: var(--palette-neo-bone);
+  --color-cozy-sage: var(--cozy-sage);
+  --color-cozy-sky: var(--cozy-sky);
+  --color-cozy-lavender: var(--cozy-lavender);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -43,109 +49,123 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: 0.125rem;
-  --radius-md: 0.125rem;
-  --radius-lg: 0.125rem;
-  --radius-xl: 0.125rem;
-  --radius-2xl: 0.125rem;
-  --radius-3xl: 0.125rem;
-  --radius-4xl: 0.125rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.125rem;
+  --radius-4xl: 1.25rem;
 }
 
 :root {
-  /* Neo surfaces (light): soft pastels */
-  --palette-neo-bone: #f8fafc;
-  --palette-neo-yellow: #fff4bd;
-  --palette-neo-pink: #ffd1e3;
-  --palette-neo-mint: #d0f4de;
+  --palette-neo-bone: #f3f2ef;
+  --palette-neo-yellow: #f5efd8;
+  --palette-neo-pink: #f3e4ee;
+  --palette-neo-mint: #e4f1ea;
 
-  --background: #f8fafc;
-  --foreground: #172554;
-  --card: #fff4bd;
-  --card-foreground: #172554;
+  --cozy-sage: #7d9a84;
+  --cozy-sky: #9cbdd9;
+  --cozy-lavender: #c5c4e3;
+
+  --shadow-cozy: 0 4px 20px -5px rgb(0 0 0 / 0.06);
+  --shadow-cozy-md: 0 8px 28px -8px rgb(0 0 0 / 0.08);
+  --shadow-glow-primary: 0 0 0 3px rgb(125 154 132 / 0.22);
+
+  --background: #fafafa;
+  --foreground: #3f3d3a;
+  --card: #ffffff;
+  --card-foreground: #3f3d3a;
   --popover: #ffffff;
-  --popover-foreground: #172554;
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-  --secondary: #d0f4de;
-  --secondary-foreground: #172554;
-  --muted: #e8eef9;
-  --muted-foreground: #334155;
-  --accent: #ffd1e3;
-  --accent-foreground: #172554;
-  --destructive: oklch(0.52 0.2 25);
-  --border: #1d4ed8;
-  --input: #1d4ed8;
-  --ring: #2563eb;
-  --chart-1: #fff4bd;
-  --chart-2: #ffd1e3;
-  --chart-3: #d0f4de;
-  --chart-4: #3b82f6;
-  --chart-5: #1e40af;
-  --radius: 0.125rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #172554;
-  --sidebar-primary: #2563eb;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eff6ff;
-  --sidebar-accent-foreground: #172554;
-  --sidebar-border: #1d4ed8;
-  --sidebar-ring: #2563eb;
+  --popover-foreground: #3f3d3a;
+
+  --primary: #6d8b73;
+  --primary-foreground: #fafcfa;
+
+  --secondary: #eceaf5;
+  --secondary-foreground: #4a475c;
+
+  --muted: #f0eeeb;
+  --muted-foreground: #6b6762;
+
+  --accent: #ddeef5;
+  --accent-foreground: #2d3a3f;
+
+  --destructive: oklch(0.52 0.18 25);
+
+  --border: #e8e6e3;
+  --input: #e8e6e3;
+  --ring: #7d9a84;
+
+  --chart-1: #7d9a84;
+  --chart-2: #9cbdd9;
+  --chart-3: #c5c4e3;
+  --chart-4: #6d8b73;
+  --chart-5: #8faab8;
+
+  --radius: 1rem;
+
+  --sidebar: rgb(255 255 255 / 0.58);
+  --sidebar-foreground: #3f3d3a;
+  --sidebar-primary: #6d8b73;
+  --sidebar-primary-foreground: #fafcfa;
+  --sidebar-accent: rgb(125 154 132 / 0.14);
+  --sidebar-accent-foreground: #3f3d3a;
+  --sidebar-border: transparent;
+  --sidebar-ring: #7d9a84;
 }
 
-/*
- * Dark: layered neutrals, hairline borders (no bright blue frames on every control),
- * soft primary, theme-aware neo pastels for the same components as light.
- */
 .dark {
-  /* Slightly above --background so tab rails / shells read as a distinct band */
-  --palette-neo-bone: oklch(0.175 0.012 264);
-  --palette-neo-yellow: oklch(0.36 0.068 92);
-  --palette-neo-pink: oklch(0.32 0.048 343);
-  --palette-neo-mint: oklch(0.32 0.052 168);
+  --palette-neo-bone: oklch(0.22 0.012 85);
+  --palette-neo-yellow: oklch(0.32 0.045 92);
+  --palette-neo-pink: oklch(0.3 0.04 340);
+  --palette-neo-mint: oklch(0.3 0.045 165);
 
-  --background: oklch(0.145 0.009 264);
-  --foreground: oklch(0.96 0.006 264);
+  --shadow-cozy: 0 4px 24px -6px rgb(0 0 0 / 0.35);
+  --shadow-cozy-md: 0 10px 32px -8px rgb(0 0 0 / 0.45);
+  --shadow-glow-primary: 0 0 0 3px rgb(160 190 168 / 0.22);
 
-  --card: oklch(0.2 0.012 264);
-  --card-foreground: oklch(0.96 0.006 264);
+  --background: oklch(0.2 0.012 75);
+  --foreground: oklch(0.94 0.01 75);
 
-  --popover: oklch(0.22 0.014 264);
-  --popover-foreground: oklch(0.97 0.005 264);
+  --card: oklch(0.24 0.014 75);
+  --card-foreground: oklch(0.94 0.01 75);
 
-  --primary: oklch(0.74 0.13 252);
-  --primary-foreground: oklch(0.14 0.035 262);
+  --popover: oklch(0.26 0.014 75);
+  --popover-foreground: oklch(0.95 0.008 75);
 
-  --secondary: oklch(0.27 0.022 264);
-  --secondary-foreground: oklch(0.94 0.012 264);
+  --primary: oklch(0.72 0.08 150);
+  --primary-foreground: oklch(0.18 0.02 150);
 
-  --muted: oklch(0.26 0.018 264);
-  --muted-foreground: oklch(0.74 0.028 264);
+  --secondary: oklch(0.3 0.02 280);
+  --secondary-foreground: oklch(0.92 0.02 280);
 
-  --accent: oklch(0.3 0.035 278);
-  --accent-foreground: oklch(0.96 0.008 264);
+  --muted: oklch(0.28 0.012 75);
+  --muted-foreground: oklch(0.72 0.02 75);
 
-  --destructive: oklch(0.64 0.2 22);
+  --accent: oklch(0.32 0.03 240);
+  --accent-foreground: oklch(0.94 0.01 240);
 
-  /* Hairline separation — avoids the “neon blue box” look */
-  --border: oklch(1 0 0 / 0.12);
-  --input: oklch(1 0 0 / 0.16);
-  --ring: oklch(0.74 0.13 252 / 0.45);
+  --destructive: oklch(0.62 0.18 22);
 
-  --chart-1: oklch(0.4 0.075 92);
-  --chart-2: oklch(0.38 0.055 343);
-  --chart-3: oklch(0.38 0.055 168);
-  --chart-4: oklch(0.72 0.13 252);
-  --chart-5: oklch(0.62 0.08 252);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.12);
+  --ring: oklch(0.72 0.08 150 / 0.45);
 
-  --sidebar: oklch(0.125 0.01 264);
-  --sidebar-foreground: oklch(0.93 0.012 264);
-  --sidebar-primary: oklch(0.74 0.13 252);
-  --sidebar-primary-foreground: oklch(0.14 0.035 262);
-  --sidebar-accent: oklch(0.24 0.022 264);
-  --sidebar-accent-foreground: oklch(0.96 0.006 264);
-  --sidebar-border: oklch(1 0 0 / 0.1);
-  --sidebar-ring: oklch(0.74 0.13 252 / 0.4);
+  --chart-1: oklch(0.65 0.08 150);
+  --chart-2: oklch(0.68 0.06 240);
+  --chart-3: oklch(0.7 0.06 290);
+  --chart-4: oklch(0.72 0.08 150);
+  --chart-5: oklch(0.6 0.04 220);
+
+  --sidebar: oklch(0.18 0.012 75 / 0.72);
+  --sidebar-foreground: oklch(0.92 0.015 75);
+  --sidebar-primary: oklch(0.72 0.08 150);
+  --sidebar-primary-foreground: oklch(0.18 0.02 150);
+  --sidebar-accent: oklch(0.72 0.08 150 / 0.15);
+  --sidebar-accent-foreground: oklch(0.94 0.01 75);
+  --sidebar-border: transparent;
+  --sidebar-ring: oklch(0.72 0.08 150 / 0.4);
 }
 
 @layer base {
@@ -153,7 +173,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background font-semibold text-foreground antialiased;
+    @apply bg-background font-medium text-foreground antialiased;
   }
   html {
     @apply font-sans;
@@ -161,26 +181,56 @@
   h1,
   h2,
   h3 {
-    @apply font-black tracking-tight text-foreground;
+    @apply font-medium tracking-tight text-foreground;
   }
 }
 
 @layer utilities {
-  .neo-shadow {
-    box-shadow: 4px 4px 0 0 var(--border);
+  .shadow-cozy {
+    box-shadow: var(--shadow-cozy);
   }
-  .neo-shadow-hover {
-    @apply transition-all duration-150;
+  .shadow-cozy-md {
+    box-shadow: var(--shadow-cozy-md);
   }
-  .neo-shadow-hover:hover {
-    box-shadow: 1px 1px 0 0 var(--border);
-    transform: translate(3px, 3px);
+  .card-cozy-hover {
+    @apply transition-[box-shadow,background-color,transform] duration-200 ease-out;
   }
-  .neo-shadow-hover:active {
-    box-shadow: none;
-    transform: translate(4px, 4px);
+  .card-cozy-hover:hover {
+    box-shadow: var(--shadow-cozy-md);
+    transform: scale(1.01);
   }
-  .neo-border {
-    @apply rounded-sm border-2 border-border;
+
+  .skeleton-shimmer {
+    @apply relative overflow-hidden bg-muted/75;
+    background-image: linear-gradient(
+      105deg,
+      transparent 0%,
+      oklch(0.94 0.035 200 / 0.65) 42%,
+      oklch(0.96 0.04 150 / 0.55) 50%,
+      oklch(0.94 0.035 200 / 0.65) 58%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: skeleton-shimmer-pan 2.2s ease-in-out infinite;
+  }
+
+  .dark .skeleton-shimmer {
+    background-image: linear-gradient(
+      105deg,
+      transparent 0%,
+      oklch(0.28 0.02 200 / 0.55) 42%,
+      oklch(0.34 0.025 150 / 0.45) 50%,
+      oklch(0.28 0.02 200 / 0.55) 58%,
+      transparent 100%
+    );
+  }
+
+  @keyframes skeleton-shimmer-pan {
+    0% {
+      background-position: 120% 0;
+    }
+    100% {
+      background-position: -120% 0;
+    }
   }
 }

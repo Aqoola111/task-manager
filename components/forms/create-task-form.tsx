@@ -107,7 +107,7 @@ export function CreateTaskForm() {
   }, [projectRows]);
 
   return (
-    <Card className="border-border bg-neo-pink">
+    <Card className="border-0 bg-card">
       <CardHeader>
         <CardTitle>New task</CardTitle>
         <CardDescription>
@@ -122,7 +122,7 @@ export function CreateTaskForm() {
             <Skeleton className="h-20 w-full rounded-sm" />
           </div>
         ) : noProjects ? (
-          <div className="space-y-4 rounded-sm border-2 border-dashed border-border bg-neo-yellow/50 p-4">
+          <div className="space-y-4 rounded-2xl border border-dashed border-border/50 bg-muted/40 p-4">
             <p className="text-sm font-bold text-foreground">
               No projects yet — create a project before adding tasks.
             </p>

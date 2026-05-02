@@ -28,14 +28,14 @@ function Toaster({ ...props }: ToasterProps) {
       toastOptions={{
         classNames: {
           toast:
-            "group toast border-2 border-border bg-card text-card-foreground shadow-[4px_4px_0_0_var(--border)] rounded-sm font-semibold backdrop-blur-md",
-          title: "font-bold text-foreground",
-          description: "text-sm font-semibold text-muted-foreground",
+            "group toast rounded-2xl border-[0.5px] border-border/80 bg-card/95 text-card-foreground shadow-cozy-md backdrop-blur-xl font-medium",
+          title: "font-medium text-foreground",
+          description: "text-sm font-medium text-muted-foreground",
           actionButton:
-            "rounded-sm border-2 border-border bg-neo-yellow px-2 py-1 font-bold shadow-[2px_2px_0_0_var(--border)]",
-          cancelButton: "font-bold text-muted-foreground",
+            "rounded-lg border-[0.5px] border-border/60 bg-primary/15 px-2 py-1 font-medium text-foreground",
+          cancelButton: "font-medium text-muted-foreground",
           closeButton:
-            "rounded-sm border border-border bg-background text-foreground",
+            "rounded-lg border-[0.5px] border-border/60 bg-muted/50 text-foreground",
         },
       }}
       style={
